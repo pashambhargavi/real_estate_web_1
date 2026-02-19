@@ -39,7 +39,7 @@
 
         var title = isCity
             ? '&#x1F4C8; Top Investment Opportunities in <b style="color:#fbbf24;font-size:17px;">' + city + '</b>'
-            : '&#x1F3D9;&#xFE0F; Top Trending Real Estate Markets in India';
+            : '&#x1F3D9;&#xFE0F; Top Trending Properties';
 
         var safe = newsText
             .replace(/&/g, '&amp;')
