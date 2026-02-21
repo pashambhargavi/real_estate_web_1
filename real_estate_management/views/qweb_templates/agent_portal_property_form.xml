@@ -4,192 +4,591 @@
         <t t-call="portal.portal_layout">
             <t t-set="breadcrumbs_searchbar" t-value="True"/>
 
-            <div class="container mt-4 mb-5">
-                <div class="row">
-                    <div class="col-lg-8 offset-lg-2">
-                        <!-- Error Message -->
-                        <div t-if="error" class="alert alert-danger alert-dismissible fade show">
-                            <i class="fa fa-exclamation-circle"/>
-                            Error submitting property. Please try again.
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"/>
+            <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&amp;family=DM+Sans:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+
+            <style>
+                :root {
+                    --navy:       #0d1b2a;
+                    --navy-light: #1e2f45;
+                    --gold:       #c9a84c;
+                    --gold-light: #e8c96a;
+                    --cream:      #faf7f2;
+                    --border:     #e2d9c8;
+                    --muted:      #6b7a8d;
+                    --white:      #ffffff;
+                    --text:       #0d1b2a;
+                }
+
+                /* ── suppress portal breadcrumbs / extra spacing ── */
+                .o_portal_wrap > .o_portal_my_home { display: none !important; }
+                .page-header, .o_portal_breadcrumbs { display: none !important; }
+
+                /* ── page bg ── */
+                .prop-page { background: var(--cream); }
+
+                /* ══════════════ HERO ══════════════ */
+                .prop-hero {
+                    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 65%, #243b55 100%);
+                    padding: 28px 0 48px;
+                    text-align: center;
+                    position: relative;
+                    overflow: hidden;
+                }
+                .prop-hero::before {
+                    content: '';
+                    position: absolute; inset: 0;
+                    background: url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23c9a84c' fill-opacity='.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");
+                }
+
+                .prop-hero-badge {
+                    display: inline-flex; align-items: center; gap: 7px;
+                    background: rgba(201,168,76,.15);
+                    border: 1px solid rgba(201,168,76,.4);
+                    color: var(--gold-light);
+                    padding: 4px 16px; border-radius: 50px;
+                    font-size: 10px; font-weight: 600;
+                    letter-spacing: 2px; text-transform: uppercase;
+                    margin-bottom: 12px;
+                }
+                .prop-hero-title {
+                    font-family: 'Cormorant Garamond', serif;
+                    font-size: clamp(26px, 4vw, 44px);
+                    font-weight: 600; color: var(--white);
+                    margin-bottom: 6px; line-height: 1.1;
+                }
+                .prop-hero-sub {
+                    color: rgba(255,255,255,.5);
+                    font-size: 13px; font-weight: 300; margin-bottom: 20px;
+                }
+
+                .prop-hero-stats {
+                    display: inline-flex; align-items: center;
+                    background: rgba(255,255,255,.05);
+                    border: 1px solid rgba(201,168,76,.2);
+                    border-radius: 50px; padding: 4px;
+                    flex-wrap: wrap; justify-content: center;
+                }
+                .prop-stat {
+                    display: flex; align-items: center; gap: 8px;
+                    padding: 6px 18px;
+                    border-right: 1px solid rgba(201,168,76,.2);
+                }
+                .prop-stat:last-child { border-right: none; }
+                .prop-stat-icon {
+                    width: 28px; height: 28px; border-radius: 50%;
+                    background: rgba(201,168,76,.15);
+                    border: 1px solid rgba(201,168,76,.3);
+                    display: flex; align-items: center; justify-content: center;
+                    color: var(--gold); font-size: 11px; flex-shrink: 0;
+                }
+                .prop-stat-label { font-weight: 600; font-size: 11px; color: var(--gold-light); display: block; line-height: 1.2; }
+                .prop-stat-desc  { font-size: 10px; color: rgba(255,255,255,.4); line-height: 1.2; }
+
+                /* ══════════════ FORM WRAP ══════════════ */
+                .prop-form-wrap {
+                    margin-top: -24px;
+                    position: relative; z-index: 10;
+                    padding-bottom: 48px;
+                }
+
+                /* ══════════════ CARD ══════════════ */
+                .prop-card {
+                    background: var(--white);
+                    border-radius: 14px; overflow: hidden;
+                    box-shadow: 0 16px 48px rgba(13,27,42,.13), 0 4px 14px rgba(13,27,42,.07);
+                    border: 1px solid var(--border);
+                }
+                /* gold-navy gradient top accent */
+                .prop-card-top-border {
+                    height: 4px;
+                    background: linear-gradient(90deg, var(--navy) 0%, var(--gold) 50%, var(--navy) 100%);
+                }
+
+                /* card header */
+                .prop-card-header {
+                    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+                    padding: 20px 28px;
+                    display: flex; align-items: center;
+                    justify-content: space-between; flex-wrap: wrap; gap: 10px;
+                }
+                .prop-card-header-title {
+                    font-family: 'Cormorant Garamond', serif;
+                    font-size: 19px; font-weight: 600; color: var(--white); margin: 0 0 2px;
+                }
+                .prop-card-header-sub { color: rgba(255,255,255,.4); font-size: 12px; margin: 0; }
+
+                .prop-badges { display: flex; gap: 7px; }
+                .prop-badge {
+                    display: inline-flex; align-items: center; gap: 5px;
+                    padding: 4px 11px; border-radius: 6px;
+                    font-size: 11px; font-weight: 600;
+                }
+                .prop-badge-secure {
+                    background: rgba(255,255,255,.08);
+                    border: 1px solid rgba(255,255,255,.15);
+                    color: rgba(255,255,255,.6);
+                }
+                .prop-badge-verified {
+                    background: rgba(201,168,76,.15);
+                    border: 1px solid rgba(201,168,76,.4);
+                    color: var(--gold-light);
+                }
+
+                /* ── form body ── */
+                .prop-form-body { padding: 26px 28px; }
+
+                /* ══════════════ ERROR (inside card) ══════════════ */
+                .prop-alert-error {
+                    display: flex; align-items: center; gap: 12px;
+                    background: #fef2f2;
+                    border: 1px solid #fecaca;
+                    border-left: 4px solid #dc2626;
+                    border-radius: 9px;
+                    padding: 12px 15px;
+                    margin-bottom: 20px;
+                    font-size: 13px; color: #7f1d1d;
+                    font-family: 'DM Sans', sans-serif;
+                }
+                .prop-alert-close {
+                    margin-left: auto; background: none; border: none;
+                    color: #7f1d1d; cursor: pointer; font-size: 17px;
+                    opacity: .55; padding: 0; line-height: 1;
+                }
+                .prop-alert-close:hover { opacity: 1; }
+
+                /* ══════════════ SECTIONS ══════════════ */
+                .prop-section {
+                    margin-bottom: 26px; padding-bottom: 26px;
+                    border-bottom: 1px solid var(--border);
+                }
+                .prop-section:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+                .prop-section-header {
+                    display: flex; align-items: center; gap: 11px; margin-bottom: 18px;
+                }
+                .prop-section-num {
+                    width: 32px; height: 32px; border-radius: 50%;
+                    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+                    border: 2px solid var(--gold);
+                    display: flex; align-items: center; justify-content: center;
+                    font-family: 'Cormorant Garamond', serif;
+                    font-size: 14px; font-weight: 700; color: var(--gold); flex-shrink: 0;
+                }
+                .prop-section-title {
+                    font-family: 'Cormorant Garamond', serif;
+                    font-size: 17px; font-weight: 600; color: var(--text); margin: 0 0 1px;
+                }
+                .prop-section-subtitle { color: var(--muted); font-size: 12px; margin: 0; }
+
+                /* ══════════════ LABELS &amp; INPUTS ══════════════ */
+                .prop-label {
+                    font-size: 11px; font-weight: 600;
+                    letter-spacing: .8px; text-transform: uppercase;
+                    color: var(--navy); margin-bottom: 6px;
+                    display: flex; align-items: center; gap: 4px;
+                }
+                .prop-label .req { color: var(--gold); font-size: 12px; }
+                .prop-label .hint {
+                    font-size: 11px; color: var(--muted);
+                    text-transform: none; letter-spacing: 0; font-weight: 400;
+                }
+
+                .prop-input, .prop-select, .prop-textarea {
+                    width: 100%; padding: 10px 13px;
+                    border: 1.5px solid var(--border); border-radius: 8px;
+                    font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text);
+                    background: var(--cream); transition: all .2s ease; outline: none;
+                    -webkit-appearance: none; appearance: none; box-sizing: border-box;
+                }
+                .prop-input:focus, .prop-select:focus, .prop-textarea:focus {
+                    border-color: var(--gold); background: var(--white);
+                    box-shadow: 0 0 0 3px rgba(201,168,76,.1);
+                }
+                .prop-input::placeholder, .prop-textarea::placeholder { color: #b8bfc9; font-weight: 300; }
+                .prop-select {
+                    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23c9a84c' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
+                    background-repeat: no-repeat; background-position: right 12px center;
+                    padding-right: 34px; cursor: pointer;
+                }
+                .prop-textarea { resize: vertical; min-height: 78px; }
+
+                /* icon-prefix input */
+                .prop-input-icon { position: relative; }
+                .prop-input-icon .icon {
+                    position: absolute; left: 11px; top: 50%;
+                    transform: translateY(-50%);
+                    color: var(--gold); font-size: 12px; pointer-events: none;
+                    font-style: normal; font-weight: 700;
+                }
+                .prop-input-icon .prop-input { padding-left: 32px; }
+
+                /* ══════════════ FILE UPLOAD ══════════════ */
+                .prop-file-upload {
+                    border: 2px dashed var(--border); border-radius: 9px;
+                    padding: 18px 14px; text-align: center;
+                    background: var(--cream); cursor: pointer;
+                    position: relative; transition: all .2s ease;
+                }
+                .prop-file-upload:hover { border-color: var(--gold); background: rgba(201,168,76,.03); }
+                .prop-file-upload input[type="file"] {
+                    position: absolute; inset: 0; opacity: 0;
+                    cursor: pointer; width: 100%; height: 100%;
+                }
+                .prop-file-icon {
+                    width: 38px; height: 38px; border-radius: 8px;
+                    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+                    display: inline-flex; align-items: center; justify-content: center;
+                    color: var(--gold); font-size: 15px; margin-bottom: 7px;
+                }
+                .prop-file-title { font-weight: 600; font-size: 13px; color: var(--text); margin-bottom: 2px; }
+                .prop-file-hint  { font-size: 11px; color: var(--muted); }
+
+                /* ══════════════ NOTE BOX ══════════════ */
+                .prop-note {
+                    display: flex; align-items: flex-start; gap: 11px;
+                    background: linear-gradient(135deg, #f5e8c0 0%, #faf7f2 100%);
+                    border: 1px solid rgba(201,168,76,.4);
+                    border-left: 4px solid var(--gold);
+                    border-radius: 9px; padding: 13px 16px; margin-bottom: 20px;
+                }
+                .prop-note-icon { color: var(--gold); font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+                .prop-note-text { font-size: 13px; color: #5a4a1e; line-height: 1.55; margin: 0; }
+                .prop-note-text strong { color: #3a2e0a; font-weight: 600; }
+
+                /* helper text */
+                .prop-helper { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+                /* ══════════════ BUTTONS ══════════════ */
+                .prop-btn-primary {
+                    display: flex; align-items: center; justify-content: center; gap: 8px;
+                    width: 100%; padding: 14px 24px;
+                    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+                    color: var(--white); border: none; border-radius: 9px;
+                    font-family: 'DM Sans', sans-serif; font-size: 14px;
+                    font-weight: 600; letter-spacing: .4px;
+                    cursor: pointer; transition: all .25s ease;
+                    text-decoration: none; position: relative; overflow: hidden;
+                }
+                .prop-btn-primary::after {
+                    content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+                    height: 2px; background: linear-gradient(90deg, transparent, var(--gold), transparent);
+                }
+                .prop-btn-primary:hover {
+                    transform: translateY(-1px); color: var(--white); text-decoration: none;
+                    box-shadow: 0 8px 24px rgba(13,27,42,.25);
+                }
+
+                .prop-btn-secondary {
+                    display: flex; align-items: center; justify-content: center; gap: 8px;
+                    width: 100%; padding: 12px 24px;
+                    background: transparent; color: var(--muted);
+                    border: 1.5px solid var(--border); border-radius: 9px;
+                    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+                    cursor: pointer; transition: all .2s ease; text-decoration: none;
+                }
+                .prop-btn-secondary:hover {
+                    border-color: var(--navy); color: var(--navy);
+                    background: rgba(13,27,42,.03); text-decoration: none;
+                }
+
+                /* ══════════════ CARD FOOTER ══════════════ */
+                .prop-card-footer {
+                    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+                    padding: 16px 28px;
+                    border-top: 1px solid rgba(201,168,76,.2);
+                    display: flex; align-items: center;
+                    justify-content: space-between; flex-wrap: wrap; gap: 8px;
+                }
+                .prop-footer-left {
+                    display: flex; align-items: center; gap: 6px;
+                    color: rgba(255,255,255,.45); font-size: 12px;
+                }
+                .prop-footer-left i { color: var(--gold); }
+                .prop-footer-right { font-size: 11px; color: rgba(255,255,255,.3); }
+                .prop-footer-right em { color: var(--gold); font-style: normal; }
+
+                /* ══════════════ RESPONSIVE ══════════════ */
+                @media (max-width: 768px) {
+                    .prop-hero        { padding: 20px 0 40px; }
+                    .prop-form-body   { padding: 18px 16px; }
+                    .prop-card-header { padding: 16px; }
+                    .prop-card-footer { padding: 13px 16px; }
+                }
+                @media (max-width: 576px) {
+                    .prop-hero-stats  { flex-direction: column; border-radius: 10px; width: 90%; }
+                    .prop-stat        { border-right: none; border-bottom: 1px solid rgba(201,168,76,.15); justify-content: center; }
+                    .prop-stat:last-child { border-bottom: none; }
+                    .prop-card-header { flex-direction: column; align-items: flex-start; }
+                    .prop-badges      { flex-wrap: wrap; }
+                }
+            </style>
+
+            <div class="prop-page">
+
+                <!-- ══ HERO ══ -->
+                <div class="prop-hero">
+                    <div class="container position-relative">
+                        <div class="prop-hero-badge">
+                            <i class="fa fa-star"/>&#160;Premium Registration · Verified Listings
                         </div>
+                        <h1 class="prop-hero-title">Submit Your Property</h1>
+                        <p class="prop-hero-sub">A luxury-first listing experience. Get verified within 24 hours.</p>
 
-                        <div class="card shadow border-0">
-                            <div class="card-header bg-gradient-primary text-white text-center py-4"
-                                 style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                                <i class="fa fa-plus-circle fa-3x mb-2"/>
-                                <h3 class="mb-0">Submit New Property</h3>
+                        <div class="prop-hero-stats">
+                            <div class="prop-stat">
+                                <div class="prop-stat-icon"><i class="fa fa-shield"/></div>
+                                <div>
+                                    <span class="prop-stat-label">Verified</span>
+                                    <span class="prop-stat-desc">Manual review</span>
+                                </div>
                             </div>
-
-                            <div class="card-body p-4">
-                                <form action="/my/agent/property/submit" method="POST" enctype="multipart/form-data"
-                                      class="needs-validation">
-                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-
-                                    <!-- Profile Photo Section -->
-                                    <div class="mb-4">
-                                        <h5 class="mb-3">
-                                            <i class="fa fa-camera text-primary"/>
-                                            Profile Photo
-                                        </h5>
-                                        <div class="mb-3">
-                                            <label class="form-label">Main Property Image</label>
-                                            <input type="file" name="main_image" class="form-control" accept="image/*"/>
-                                            <div class="form-text">Upload main property photo (JPG, PNG)</div>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label class="form-label">Gallery Images (Multiple)</label>
-                                            <input type="file" name="gallery_images" class="form-control"
-                                                   accept="image/*" multiple="1"/>
-                                            <div class="form-text">You can select multiple images</div>
-                                        </div>
-                                    </div>
-
-                                    <hr class="my-4"/>
-
-                                    <!-- Personal Information Section -->
-                                    <div class="mb-4">
-                                        <h5 class="mb-3">
-                                            <i class="fa fa-info-circle text-primary"/>
-                                            Personal Information
-                                        </h5>
-
-                                        <div class="mb-3">
-                                            <label class="form-label">Property Name *</label>
-                                            <input type="text" name="property_name" class="form-control" required="1"
-                                                   placeholder="e.g., Luxury 3BHK Apartment"/>
-                                        </div>
-
-                                        <div class="row">
-                                            <!--                                            <div class="col-md-6 mb-3">-->
-                                            <!--                                                <label class="form-label">Property Type *</label>-->
-                                            <!--                                                <select name="property_type" class="form-select" required="1">-->
-                                            <!--                                                    <option value="">Select Type</option>-->
-                                            <!--                                                    <option value="apartment">Apartment</option>-->
-                                            <!--                                                    <option value="house">House</option>-->
-                                            <!--                                                    <option value="villa">Villa</option>-->
-                                            <!--                                                    <option value="land">Land</option>-->
-                                            <!--                                                    <option value="commercial">Commercial</option>-->
-                                            <!--                                                </select>-->
-                                            <!--                                            </div>-->
-
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label">State *</label>
-                                                <select name="state_id" class="form-select" required="1">
-                                                    <option value="">Select State</option>
-                                                    <t t-foreach="request.env['res.country.state'].sudo().search([('country_id.code', '=', 'IN')])"
-                                                       t-as="state">
-                                                        <option t-att-value="state.id">
-                                                            <t t-esc="state.name"/>
-                                                        </option>
-                                                    </t>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label">Category</label>
-                                                <select name="category_id" class="form-select">
-                                                    <option value="">Select Category</option>
-                                                    <t t-foreach="categories" t-as="cat">
-                                                        <option t-att-value="cat.id">
-                                                            <t t-esc="cat.name"/>
-                                                        </option>
-                                                    </t>
-                                                </select>
-                                            </div>
-                                        </div>
-
-                                        <div class="row">
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label">Price (₹) *</label>
-                                                <input type="number" name="price" class="form-control" required="1"
-                                                       min="0" placeholder="5000000"/>
-                                            </div>
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label">Plot Area (sq ft)</label>
-                                                <input type="number" name="plot_area" class="form-control"
-                                                       min="0" placeholder="1200"/>
-                                            </div>
-                                        </div>
-
-                                        <!--                                        <div class="row">-->
-                                        <!--                                            <div class="col-md-6 mb-3">-->
-                                        <!--                                                <label class="form-label">Bedrooms</label>-->
-                                        <!--                                                <input type="number" name="bedrooms" class="form-control"-->
-                                        <!--                                                       min="0" value="0" placeholder="3"/>-->
-                                        <!--                                            </div>-->
-                                        <!--                                            <div class="col-md-6 mb-3">-->
-                                        <!--                                                <label class="form-label">Bathrooms</label>-->
-                                        <!--                                                <input type="number" name="bathrooms" class="form-control"-->
-                                        <!--                                                       min="0" value="0" placeholder="2"/>-->
-                                        <!--                                            </div>-->
-                                        <!--                                        </div>-->
-
-                                        <div class="row">
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label">City *</label>
-                                                <input type="text" name="city" class="form-control" required="1"
-                                                       placeholder="Hyderabad"/>
-                                            </div>
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label">ZIP Code</label>
-                                                <input type="text" name="zip_code" class="form-control"
-                                                       placeholder="500001"/>
-                                            </div>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label class="form-label">Street Address</label>
-                                            <input type="text" name="street" class="form-control"
-                                                   placeholder="Plot No 123, Road No 45"/>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label class="form-label">Full Address</label>
-                                            <textarea name="address" class="form-control" rows="2"
-                                                      placeholder="Complete address with landmarks"></textarea>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label class="form-label">Short Description</label>
-                                            <textarea name="short_description" class="form-control" rows="2"
-                                                      placeholder="Brief property description (1-2 lines)"></textarea>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label class="form-label">Detailed Description</label>
-                                            <textarea name="description" class="form-control" rows="5"
-                                                      placeholder="Detailed property information, amenities, nearby facilities, etc."></textarea>
-                                        </div>
-                                    </div>
-
-                                    <!-- Info Alert -->
-                                    <div class="alert alert-info d-flex align-items-center">
-                                        <i class="fa fa-info-circle fa-2x me-3"/>
-                                        <div>
-                                            <strong>Note:</strong>
-                                            Your property will be reviewed by our admin team before publishing on the
-                                            website.
-                                        </div>
-                                    </div>
-
-                                    <!-- Submit Buttons -->
-                                    <div class="d-grid gap-2">
-                                        <button type="submit" class="btn btn-primary btn-lg">
-                                            <i class="fa fa-check-circle"/>
-                                            Submit Property
-                                        </button>
-                                        <a href="/my/agent/dashboard" class="btn btn-outline-secondary">
-                                            <i class="fa fa-times"/>
-                                            Cancel
-                                        </a>
-                                    </div>
-                                </form>
+                            <div class="prop-stat">
+                                <div class="prop-stat-icon"><i class="fa fa-users"/></div>
+                                <div>
+                                    <span class="prop-stat-label">10M+</span>
+                                    <span class="prop-stat-desc">Active buyers</span>
+                                </div>
+                            </div>
+                            <div class="prop-stat">
+                                <div class="prop-stat-icon"><i class="fa fa-bolt"/></div>
+                                <div>
+                                    <span class="prop-stat-label">Instant</span>
+                                    <span class="prop-stat-desc">Visibility boost</span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+
+                <!-- ══ CARD ══ -->
+                <div class="prop-form-wrap">
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-xl-8 col-lg-9 col-md-11">
+                                <div class="prop-card">
+
+                                    <!-- gold-navy top border -->
+                                    <div class="prop-card-top-border"/>
+
+                                    <!-- header -->
+                                    <div class="prop-card-header">
+                                        <div>
+                                            <h2 class="prop-card-header-title">Property Registration Form</h2>
+                                            <p class="prop-card-header-sub">Fill in all details carefully. Upload clear images and valid documents.</p>
+                                        </div>
+                                        <div class="prop-badges">
+                                            <span class="prop-badge prop-badge-secure"><i class="fa fa-lock"/>&#160;Secure</span>
+                                            <span class="prop-badge prop-badge-verified"><i class="fa fa-check-circle"/>&#160;Verified</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- body -->
+                                    <div class="prop-form-body">
+
+                                        <!-- ✦ ERROR MESSAGE — lives INSIDE the card ✦ -->
+                                        <t t-if="error">
+                                            <div class="prop-alert-error">
+                                                <i class="fa fa-exclamation-circle"/>
+                                                <span>There was an error submitting your property. Please review the fields below and try again.</span>
+                                                <button type="button" class="prop-alert-close"
+                                                        onclick="this.closest('.prop-alert-error').style.display='none'">&#215;</button>
+                                            </div>
+                                        </t>
+
+                                        <form action="/my/agent/property/submit" method="POST" enctype="multipart/form-data">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                            <!-- ── 01 Images ── -->
+                                            <div class="prop-section">
+                                                <div class="prop-section-header">
+                                                    <div class="prop-section-num">01</div>
+                                                    <div>
+                                                        <h3 class="prop-section-title">Property Images</h3>
+                                                        <p class="prop-section-subtitle">Upload high-quality photos to attract more buyers</p>
+                                                    </div>
+                                                </div>
+                                                <div class="row g-3">
+                                                    <div class="col-md-6">
+                                                        <label class="prop-label">Main Property Image <span class="hint">· JPG, PNG</span></label>
+                                                        <div class="prop-file-upload">
+                                                            <input type="file" name="main_image" accept="image/*"/>
+                                                            <div class="prop-file-icon"><i class="fa fa-image"/></div>
+                                                            <div class="prop-file-title">Upload Main Photo</div>
+                                                            <div class="prop-file-hint">Click to browse or drag &amp; drop</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="prop-label">Gallery Images <span class="hint">· Multiple allowed</span></label>
+                                                        <div class="prop-file-upload">
+                                                            <input type="file" name="gallery_images" accept="image/*" multiple="1"/>
+                                                            <div class="prop-file-icon"><i class="fa fa-th-large"/></div>
+                                                            <div class="prop-file-title">Upload Gallery Photos</div>
+                                                            <div class="prop-file-hint">Select multiple images at once</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- ── 02 Property Details ── -->
+                                            <div class="prop-section">
+                                                <div class="prop-section-header">
+                                                    <div class="prop-section-num">02</div>
+                                                    <div>
+                                                        <h3 class="prop-section-title">Property Details</h3>
+                                                        <p class="prop-section-subtitle">Core information about your listing</p>
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="prop-label">Property Name <span class="req">*</span></label>
+                                                    <input type="text" name="property_name" class="prop-input" required="1"
+                                                           placeholder="e.g., Luxury 3BHK Apartment, Banjara Hills"/>
+                                                </div>
+
+                                                <div class="row g-3 mb-3">
+                                                    <div class="col-md-6">
+                                                        <label class="prop-label">State <span class="req">*</span></label>
+                                                        <select name="state_id" class="prop-select" required="1">
+                                                            <option value="">Select State</option>
+                                                            <t t-foreach="request.env['res.country.state'].sudo().search([('country_id.code', '=', 'IN')])" t-as="state">
+                                                                <option t-att-value="state.id"><t t-esc="state.name"/></option>
+                                                            </t>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="prop-label">Category</label>
+                                                        <select name="category_id" class="prop-select">
+                                                            <option value="">Select Category</option>
+                                                            <t t-foreach="categories" t-as="cat">
+                                                                <option t-att-value="cat.id"><t t-esc="cat.name"/></option>
+                                                            </t>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row g-3">
+                                                    <div class="col-md-6">
+                                                        <label class="prop-label">Price (₹) <span class="req">*</span></label>
+                                                        <div class="prop-input-icon">
+                                                            <span class="icon">₹</span>
+                                                            <input type="number" name="price" class="prop-input" required="1"
+                                                                   min="0" placeholder="50,00,000"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="prop-label">Plot Area <span class="hint">· sq ft</span></label>
+                                                        <div class="prop-input-icon">
+                                                            <span class="icon" style="font-size:10px;top:52%;">ft²</span>
+                                                            <input type="number" name="plot_area" class="prop-input"
+                                                                   min="0" placeholder="1200"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- ── 03 Location ── -->
+                                            <div class="prop-section">
+                                                <div class="prop-section-header">
+                                                    <div class="prop-section-num">03</div>
+                                                    <div>
+                                                        <h3 class="prop-section-title">Location Details</h3>
+                                                        <p class="prop-section-subtitle">Help buyers find your property easily</p>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row g-3 mb-3">
+                                                    <div class="col-md-6">
+                                                        <label class="prop-label">City <span class="req">*</span></label>
+                                                        <div class="prop-input-icon">
+                                                            <span class="icon"><i class="fa fa-map-marker"/></span>
+                                                            <input type="text" name="city" class="prop-input" required="1"
+                                                                   placeholder="Hyderabad"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="prop-label">ZIP / PIN Code</label>
+                                                        <input type="text" name="zip_code" class="prop-input"
+                                                               placeholder="500001"/>
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="prop-label">Street Address</label>
+                                                    <input type="text" name="street" class="prop-input"
+                                                           placeholder="Plot No. 123, Road No. 45"/>
+                                                </div>
+
+<!--                                                <div>-->
+<!--                                                    <label class="prop-label">Full Address <span class="hint">· with landmarks</span></label>-->
+<!--                                                    <textarea name="address" class="prop-textarea" rows="2"-->
+<!--                                                              placeholder="Complete address with nearest landmarks, cross streets, etc."></textarea>-->
+<!--                                                </div>-->
+                                            </div>
+
+                                            <!-- ── 04 Description ── -->
+                                            <div class="prop-section">
+                                                <div class="prop-section-header">
+                                                    <div class="prop-section-num">04</div>
+                                                    <div>
+                                                        <h3 class="prop-section-title">Property Description</h3>
+                                                        <p class="prop-section-subtitle">Compelling descriptions drive more enquiries</p>
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="prop-label">Short Description <span class="hint">· 1–2 lines</span></label>
+                                                    <textarea name="short_description" class="prop-textarea" rows="2"
+                                                              placeholder="Brief, catchy overview shown in listing cards"></textarea>
+                                                    <p class="prop-helper">Appears in search results and property cards.</p>
+                                                </div>
+
+                                                <div>
+                                                    <label class="prop-label">Detailed Description</label>
+                                                    <textarea name="description" class="prop-textarea" rows="5"
+                                                              placeholder="Full details — amenities, schools, hospitals, transport, unique features…"></textarea>
+                                                </div>
+                                            </div>
+
+                                            <!-- Review Note -->
+                                            <div class="prop-note">
+                                                <i class="fa fa-info-circle prop-note-icon"/>
+                                                <p class="prop-note-text">
+                                                    <strong>Review Notice:</strong> Your property will be carefully reviewed by our admin team before publishing. This typically takes <strong>24–48 hours</strong>.
+                                                </p>
+                                            </div>
+
+                                            <!-- Buttons -->
+                                            <div class="d-flex flex-column gap-3">
+                                                <button type="submit" class="prop-btn-primary">
+                                                    <i class="fa fa-check-circle"/>&#160;Submit Property for Review
+                                                </button>
+                                                <a href="/my/agent/dashboard" class="prop-btn-secondary">
+                                                    <i class="fa fa-arrow-left"/>&#160;Back to Dashboard
+                                                </a>
+                                            </div>
+
+                                        </form>
+                                    </div><!-- /form-body -->
+
+                                    <!-- footer -->
+                                    <div class="prop-card-footer">
+                                        <div class="prop-footer-left">
+                                            <i class="fa fa-lock"/>
+                                            Your data is encrypted and securely processed.
+                                        </div>
+                                        <div class="prop-footer-right">
+                                            Fields marked <em>*</em> are required
+                                        </div>
+                                    </div>
+
+                                </div><!-- /prop-card -->
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- /prop-form-wrap -->
+
+            </div><!-- /prop-page -->
+
         </t>
     </template>
 </odoo>
